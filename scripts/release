@@ -31,7 +31,7 @@ sed -i "s/^VERSION = .*/VERSION = $version/" source/prettier.lua
 meta=`cat assets/metadata.json | jq ".[0].Versions += [
 	{
 		\"Version\": \"$version\",
-		\"Url\": \"https://github.com/gamemaker1/micro-plugin-prettier/releases/$version/download/prettier.zip\",
+		\"Url\": \"https://github.com/gamemaker1/micro-plugin-prettier/releases/download/$version/prettier.zip\",
 		\"Require\": { \"micro\": \">=1.0.3\" }
 	}
 ]"`
