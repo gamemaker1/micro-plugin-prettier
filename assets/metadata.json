@@ -1,15 +1,20 @@
 [
-	{
-		"Name": "prettier",
-		"Description": "Format your code using Prettier",
-		"Website": "https://github.com/gamemaker1/micro-plugin-prettier",
-		"Tags": ["javascript", "node", "nodejs", "typescript", "formatting"],
-		"Versions": [
-			{
-				"Version": "0.1.0",
-				"Url": "https://github.com/gamemaker1/micro-plugin-prettier/releases/download/0.1.0/prettier.zip",
-				"Require": { "micro": ">=1.0.3" }
-			}
-		]
-	}
+  {
+    "Name": "prettier",
+    "Description": "Format your code using Prettier",
+    "Website": "https://github.com/gamemaker1/micro-plugin-prettier",
+    "Tags": ["javascript", "node", "nodejs", "typescript", "formatting"],
+    "Versions": [
+      {
+        "Version": "0.1.0",
+        "Url": "https://github.com/gamemaker1/micro-plugin-prettier/releases/download/0.1.0/prettier.zip",
+        "Require": { "micro": ">=1.0.3" }
+      },
+      {
+        "Version": "0.1.1",
+        "Url": "https://github.com/gamemaker1/micro-plugin-prettier/releases/download/0.1.1/prettier.zip",
+        "Require": { "micro": ">=1.0.3" }
+      }
+    ]
+  }
 ]
