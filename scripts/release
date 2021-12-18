@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# release
+# A script to create a new release for this plugin
+
+# Requires the following to be installed:
+# - `git`: Git CLI
+# - `gh`: Github CLI
+# - `jq`: Command line JSON manipulation
+# - `zip`: ZIP file creation
+# - `npx`: Run an NPM package
+
+# The new version must be passed as the first argument
+if [[ -z "$1" ]]; then
+	echo "[error] Please pass the new version as the first argument"
+	exit 1
+fi
+
+version="$1"
+
+# Ensure that there are no unstaged changes
+if ! [[ -z "$(git status --porcelain)" ]]; then
+	echo "[error] Please commit all changes before creating a new release"
+	exit 1
+fi
+
+# Change the version in `source/prettier.lua`
+sed -i "s/^VERSION = .*/VERSION = $version/" source/prettier.lua
+
+# Add a new entry to `assets/metadata.json`
+meta=`cat assets/metadata.json | jq ".[0].Versions += [
+	{
+		\"Version\": \"$version\",
+		\"Url\": \"https://github.com/gamemaker1/micro-plugin-prettier/releases/$version/download/prettier.zip\",
+		\"Require\": { \"micro\": \">=1.0.3\" }
+	}
+]"`
+echo $meta > assets/metadata.json
+npx prettier --write assets/metadata.json
+
+echo "[info] Updated version"
+
+# Commit the changes
+git add .
+git commit -m "chore(release): $version"
+# Tag the commit
+git tag $version
+
+echo "[info] Created and tagged commit"
+
+# Push the commit and tag to GitHub
+git push -f origin main
+git push -f origin $version
+
+echo "[info] Pushed to Github"
+
+# Create a zip file with files needed by Micro
+rm -rf build/
+mkdir -p build/ && cd build/
+cp ../assets/metadata.json ./repo.json
+cp ../source/prettier.lua ./prettier.lua
+zip -qr9 prettier.zip ./repo.json ./prettier.lua
+cd ..
+
+echo "[info] Created distributable zip"
+
+# Create a Github Release with the created file
+gh release create $version ./build/prettier.zip
+
+echo "[info] Created a new release ($version)!"
+
+# Open the release in the browser so we can add the change notes
+gh release view -w $version
