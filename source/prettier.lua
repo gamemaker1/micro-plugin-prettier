@@ -1,4 +1,4 @@
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 
 -- prettier
 -- A micro plugin that automatically formats files using prettier on save
