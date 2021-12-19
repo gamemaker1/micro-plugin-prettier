@@ -8,7 +8,6 @@
 # - `gh`: Github CLI
 # - `jq`: Command line JSON manipulation
 # - `zip`: ZIP file creation
-# - `npx`: Run an NPM package
 
 # The new version must be passed as the first argument
 if [[ -z "$1" ]]; then
@@ -25,18 +24,18 @@ if ! [[ -z "$(git status --porcelain)" ]]; then
 fi
 
 # Change the version in `source/prettier.lua`
-sed -i "s/^VERSION = .*/VERSION = $version/" source/prettier.lua
+sed -i "s/^VERSION = .*/VERSION = \"$version\"/" source/prettier.lua
 
 # Add a new entry to `assets/metadata.json`
-meta=`cat assets/metadata.json | jq ".[0].Versions += [
+cat assets/metadata.json | jq ".[0].Versions += [
 	{
 		\"Version\": \"$version\",
 		\"Url\": \"https://github.com/gamemaker1/micro-plugin-prettier/releases/download/$version/prettier.zip\",
-		\"Require\": { \"micro\": \">=1.0.3\" }
+		\"Require\": {
+			\"micro\": \">=1.0.3\"
+		}
 	}
-]"`
-echo $meta > assets/metadata.json
-npx prettier --write assets/metadata.json
+]" --indent 2 | tee assets/metadata.json
 
 echo "[info] Updated version"
 
