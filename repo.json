@@ -3,13 +3,7 @@
     "Name": "prettier",
     "Description": "Format your code using Prettier",
     "Website": "https://github.com/gamemaker1/micro-plugin-prettier",
-    "Tags": [
-      "javascript",
-      "node",
-      "nodejs",
-      "typescript",
-      "formatting"
-    ],
+    "Tags": ["javascript", "node", "nodejs", "typescript", "formatting"],
     "Versions": [
       {
         "Version": "0.1.0",

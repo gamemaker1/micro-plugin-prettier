@@ -15,7 +15,20 @@ if [[ -z "$1" ]]; then
 	exit 1
 fi
 
-version="$1"
+# The plugin name
+plugin_name="prettier"
+# The new version
+plugin_version="$1"
+# The GitHub repo
+github_repo="gamemaker1/micro-plugin-prettier"
+# The GitHub remote
+github_remote="origin"
+# The GitHub branch
+github_branch="main"
+# Space-separated list of files to include in the zip
+source_files=("source/prettier.lua")
+# The metadata file (should ALWAYS be /repo.json)
+metadata_file="repo.json"
 
 # Ensure that there are no unstaged changes
 if ! [[ -z "$(git status --porcelain)" ]]; then
@@ -23,50 +36,52 @@ if ! [[ -z "$(git status --porcelain)" ]]; then
 	exit 1
 fi
 
-# Change the version in `source/prettier.lua`
-sed -i "s/^VERSION = .*/VERSION = \"$version\"/" source/prettier.lua
+# Change the version in the source file
+sed -i "s/^VERSION = .*/VERSION = \"$plugin_version\"/" "${source_files[@]}"
 
-# Add a new entry to `assets/metadata.json`
-cat assets/metadata.json | jq ".[0].Versions += [
+# Add a new entry to `repo.json`
+cat "$metadata_file" | jq ".[0].Versions += [
 	{
-		\"Version\": \"$version\",
-		\"Url\": \"https://github.com/gamemaker1/micro-plugin-prettier/releases/download/$version/prettier.zip\",
+		\"Version\": \"$plugin_version\",
+		\"Url\": \"https://github.com/$github_repo/releases/download/$plugin_version/$plugin_name.zip\",
 		\"Require\": {
 			\"micro\": \">=1.0.3\"
 		}
 	}
-]" --indent 2 | tee assets/metadata.json
+]" --indent 2 | tee "$metadata_file"
 
-echo "[info] Updated version"
+echo "[info] Updated version to $plugin_version"
 
 # Commit the changes
 git add .
-git commit -m "chore(release): $version"
+git commit -m "chore(release): $plugin_version"
 # Tag the commit
-git tag $version
+git tag "$plugin_version"
 
 echo "[info] Created and tagged commit"
 
 # Push the commit and tag to GitHub
-git push -f origin main
-git push -f origin $version
+git push -f "$github_remote" "$github_branch"
+git push -f "$github_remote" "$plugin_version"
 
 echo "[info] Pushed to Github"
 
 # Create a zip file with files needed by Micro
 rm -rf build/
 mkdir -p build/ && cd build/
-cp ../assets/metadata.json ./repo.json
-cp ../source/prettier.lua ./prettier.lua
-zip -qr9 prettier.zip ./repo.json ./prettier.lua
+cp "../$metadata_file" "./repo.json"
+for file in "${source_files[@]}"; do
+	cp "../$file" "./"
+done
+zip -qr9 "$plugin_name.zip" ./*
 cd ..
 
 echo "[info] Created distributable zip"
 
 # Create a Github Release with the created file
-gh release create $version ./build/prettier.zip
+gh release create "$plugin_version" "build/$plugin_name.zip" -t "$plugin_version" --notes "See the readme for instructions on how to install, use and configure the plugin. Thanks for using!"
 
-echo "[info] Created a new release ($version)!"
+echo "[info] Created a new release ($plugin_version)!"
 
 # Open the release in the browser so we can add the change notes
-gh release view -w $version
+gh release view -w $plugin_version
