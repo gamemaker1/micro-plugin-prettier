@@ -38,6 +38,13 @@
         "Require": {
           "micro": ">=1.0.3"
         }
+      },
+      {
+        "Version": "2.0.0",
+        "Url": "https://github.com/gamemaker1/micro-plugin-prettier/releases/download/2.0.0/prettier.zip",
+        "Require": {
+          "micro": ">=1.0.3"
+        }
       }
     ]
   }
