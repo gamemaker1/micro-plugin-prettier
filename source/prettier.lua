@@ -153,7 +153,6 @@ function format(file)
 			options = options .. " " .. value.flag  .. "=" .. tostring(value.default)
 		end
 	end
-	buffer.Log(options)
 
 	-- Run prettier on the file
 	local command = "prettier" .. options .. " --no-color --write " .. file.Buf.Path
@@ -194,4 +193,7 @@ function init()
 	
 	-- Register the `format` command
 	config.MakeCommand("format", format, config.NoComplete)
+
+	-- Register the help file
+	config.AddRuntimeFile("prettier", config.RTHelp, "help/prettier.md")
 end
