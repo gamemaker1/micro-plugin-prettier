@@ -18,8 +18,7 @@ formatted using Prettier.
 
 If Prettier detects a configuration file, the options set for the plugin will
 not apply. If there is no configuration present, then the options set for the
-plugin (or the default values take from
-[here](https://prettier.io/docs/en/options.html)) will be used.
+plugin (or the default values) will be used.
 
 You can set an option by running the following command (Press `Ctrl+E`, then run
 the following):
@@ -29,8 +28,9 @@ set prettier.<name> <value>
 ```
 
 Where `name` is an option from the table, and `value` is one of the possible
-values for that option. See the official Prettier documentation for an even mroe
-detail explanation of each option and its possible values.
+values for that option. See the
+[official Prettier documentation](https://prettier.io/docs/en/options.html) for
+an even more detail explanation of each option and its possible values.
 
 | Option                      | Description                                                                                                               | Default Value | Possible Values                       |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------- |
