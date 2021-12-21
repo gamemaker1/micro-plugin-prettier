@@ -3,8 +3,8 @@ VERSION = "0.1.3"
 -- prettier
 -- A micro plugin that automatically formats files using prettier on save
 
--- Plugin source: https://github.com/gamemaker1/micro-plugin-prettier
--- Prettier source: https://github.com/prettier/prettier
+-- plugin source: https://github.com/gamemaker1/micro-plugin-prettier
+-- prettier source: https://github.com/prettier/prettier
 
 local micro = import("micro")
 local shell = import("micro/shell")
@@ -28,23 +28,78 @@ local prettierFileTypes = {
 -- The default configuration for prettier
 -- See https://prettier.io/docs/en/options.html
 local preferences = {
-	tabWidth = 2,
-	useTabs = false,
-	semi = true,
-	singleQuote = false,
-	quoteProps = "as-needed",
-	jsxSingleQuotes = false,
-	trailingComma = "es5",
-	bracketSpacing = true,
-	bracketSameLine = false,
-	arrowParens = "always",
-	proseWrap = "preserve",
-	endOfLine = "lf",
-	embeddedLanguageFormatting = "auto",
-	vueIndentScriptAndStyle = false,
-	htmlWhitespaceSensitivity = "css",
-	requirePragma = false,
-	insertPragma = false
+	tabwidth = {
+		flag = "--tab-width",
+		default = 2
+	},
+	usetabs = {
+		flag = "--use-tabs",
+		default = false
+	},
+	semi = {
+		flag = "--semi",
+		default = true
+	},
+	singlequote = {
+		flag = "--single-quote",
+		default = false
+	},
+	quoteProps = {
+		flag = "--quote-props",
+		default = "as-needed",
+	},
+	jsxsinglequote = {
+		flag = "--jsx-single-quote",
+		default = false
+	},
+	trailingcomma = {
+		flag = "--trailing-comma",
+		default = "es5"
+	},
+	bracketspacing = {
+		flag = "--bracket-spacing",
+		default = true
+	},
+	bracketsameline = {
+		flag = "--bracket-same-line",
+		default = false
+	},
+	arrowparens = {
+		flag = "--arrow-parens",
+		default = "always"
+	},
+	wrap = {
+		flag = "--prose-wrap",
+		default = "preserve"
+	},
+	cols = {
+		flag = "--print-width",
+		default = 80
+	},
+	eol = {
+		flag = "--end-of-line",
+		default = "lf"
+	},
+	formatembeddedcode = {
+		flag = "--embedded-language-formatting",
+		default = "auto"
+	},
+	indentvuecode = {
+		flag = "--vue-indent-script-and-style",
+		default = false
+	},
+	htmlwhitespacesensitivity = {
+		flag = "--html-whitespace-sensitivity",
+		default = "css"
+	},
+	requirepragma = {
+		flag = "--require-pragma",
+		default = false
+	},
+	insertpragma = {
+		flag = "--insert-pragma",
+		default = false
+	}
 }
 
 -- Check if a table has a certain value
@@ -61,7 +116,7 @@ end
 -- Retrieve a setting
 function getOption(file, key, default)
 	if file.Buf.Settings["prettier" .. "." .. key] ~= nil then
-		-- If the local buffer's settings has a value set for that option, return it
+		-- If the local buffer"s settings has a value set for that option, return it
 		return file.Buf.Settings["prettier" .. "." .. key]
 	elseif config.GetGlobalOption("prettier" .. "." .. key) ~= nil then
 		-- If the global settings has a value set for that option, return it
@@ -86,20 +141,19 @@ function format(file)
 	if error ~= nil then
 		-- Loop through the options and create a long options string to pass to the
 		-- prettier cli
-		for key, value in pairs(preferences) do
+		for option, value in pairs(preferences) do
 			-- Check if the user has set a different value in:
 			-- - local settings
 			-- - global settings
 			-- else use the default value
-			value = tostring(getOption(file, key, value))
+			value.default = tostring(getOption(file, option, value.default))
 
 			-- Convert the option name to kebab case and append it to the existing
 			-- option string
-			options = options .. " --" .. key:gsub("%u", function (word)
-				return "-" .. string.lower(word)
-			end) .. "=" .. tostring(value)
+			options = options .. " " .. value.flag  .. "=" .. tostring(value.default)
 		end
 	end
+	buffer.Log(options)
 
 	-- Run prettier on the file
 	local command = "prettier" .. options .. " --no-color --write " .. file.Buf.Path
@@ -121,8 +175,8 @@ end
 -- On file save hook
 function onSave(file)
 	-- If the current file is of any of the above types and the user has enabled
-	-- `formatOnSave`, then format away!
-	if hasValue(prettierFileTypes, file.Buf:FileType()) and config.GetGlobalOption("prettier.formatOnSave") then
+	-- `autoformat`, then format away!
+	if hasValue(prettierFileTypes, file.Buf:FileType()) and config.GetGlobalOption("prettier.autoformat") then
 		format(file)
 	end
 
@@ -132,11 +186,11 @@ end
 -- Editor initialization hook
 function init()
 	-- Register prettier specific configuration
-	for key, value in pairs(preferences) do
-		config.RegisterCommonOption("prettier", key, value)
+	for option, value in pairs(preferences) do
+		config.RegisterCommonOption("prettier", option, value.default)
 	end
 	-- Register plugin specific options
-	config.RegisterCommonOption("prettier", "formatOnSave", true)
+	config.RegisterCommonOption("prettier", "autoformat", true)
 	
 	-- Register the `format` command
 	config.MakeCommand("format", format, config.NoComplete)
