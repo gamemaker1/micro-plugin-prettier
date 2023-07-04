@@ -5,7 +5,22 @@
 
 ## Installation and Usage
 
-Simply run the following in terminal to install the plugin:
+> **Note**
+>
+> For the plugin to work, you must first install Prettier globally, and
+> ensure it is in your `$PATH`. You can install Prettier globally by running
+> `npm install --global prettier` in terminal.
+
+First, add the following line to your Micro configuration file:
+
+```json5
+{
+  // ....,
+  "pluginrepos": ["https://raw.githubusercontent.com/gamemaker1/micro-plugin-prettier/main/repo.json"]
+}
+```
+
+Then run the following in terminal to install the plugin:
 
 ```
 micro --plugin install prettier
